@@ -12,8 +12,8 @@
         <meta name="description" content="<%= description %>">
         <% } %>
         <title><%= title %></title>
-        <link rel="icon" type="image/png" href="<%- serverURL %>/favicon.png">
-        <link rel="apple-touch-icon" href="<%- serverURL %>/apple-touch-icon.png">
+        <link rel="icon" type="image/png" href="/favicon.png">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
         <% if(useCDN) { %>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fork-awesome/1.1.7/css/fork-awesome.min.css" integrity="sha256-gsmEoJAws/Kd3CjuOQzLie5Q3yshhvmo7YNtBG7aaEY=" crossorigin="anonymous" />
@@ -24,30 +24,30 @@
         <%- include('build/slide-header') %>
         <%- include('shared/polyfill') %>
         <% } else { %>
-        <link rel="stylesheet" href="<%- serverURL %>/build/reveal.js/css/reveal.css">
-        <link rel="stylesheet" href='<%- serverURL %>/build/emojify.js/dist/css/basic/emojify.min.css'>
-        <link rel="stylesheet" href='<%- serverURL %>/css/font.css'>
-        <link rel="stylesheet" href='<%- serverURL %>/build/fork-awesome/css/fork-awesome.min.css'>
+        <link rel="stylesheet" href="/build/reveal.js/css/reveal.css">
+        <link rel="stylesheet" href='/build/emojify.js/dist/css/basic/emojify.min.css'>
+        <link rel="stylesheet" href='/css/font.css'>
+        <link rel="stylesheet" href='/build/fork-awesome/css/fork-awesome.min.css'>
         <%- include('build/slide-pack-header') %>
         <% } %>
 
         <!-- For reveal.js theme -->
         <% if(typeof theme !== 'undefined' && theme) { %>
-        <link rel="stylesheet" href="<%- serverURL %>/build/reveal.js/css/theme/<%= theme %>.css" id="theme">
+        <link rel="stylesheet" href="/build/reveal.js/css/theme/<%= theme %>.css" id="theme">
         <% } else { %>
-        <link rel="stylesheet" href="<%- serverURL %>/build/reveal.js/css/theme/black.css" id="theme">
+        <link rel="stylesheet" href="/build/reveal.js/css/theme/black.css" id="theme">
         <% } %>
         <!-- For syntax highlighting -->
-        <link rel="stylesheet" href="<%- serverURL %>/build/reveal.js/lib/css/zenburn.css">
+        <link rel="stylesheet" href="/build/reveal.js/lib/css/zenburn.css">
         <!-- For overwrite reveal.js -->
-        <link rel="stylesheet" href="<%- serverURL %>/css/slide.css">
+        <link rel="stylesheet" href="/css/slide.css">
 
         <!-- Printing and PDF exports -->
         <script nonce="<%= cspNonce %>">
             var link = document.createElement( 'link' );
             link.rel = 'stylesheet';
             link.type = 'text/css';
-            link.href = '<%- serverURL %>/build/reveal.js/' + (window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css');
+            link.href = '/build/reveal.js/' + (window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css');
             document.getElementsByTagName( 'head' )[0].appendChild( link );
         </script>
     </head>
@@ -114,9 +114,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.js" integrity="sha256-fNoRrwkP2GuYPbNSJmMJOCyfRB2DhPQe0rGTgzRsyso=" crossorigin="anonymous" defer></script>
         <%- include('build/slide-scripts') %>
         <% } else { %>
-        <script src="<%- serverURL %>/build/MathJax/MathJax.js" defer></script>
-        <script src="<%- serverURL %>/build/MathJax/config/TeX-AMS-MML_HTMLorMML.js" defer></script>
-        <script src="<%- serverURL %>/build/MathJax/config/Safe.js" defer></script>
+        <script src="/build/MathJax/MathJax.js" defer></script>
+        <script src="/build/MathJax/config/TeX-AMS-MML_HTMLorMML.js" defer></script>
+        <script src="/build/MathJax/config/Safe.js" defer></script>
         <%- include('build/slide-pack-scripts') %>
         <% } %>
     </body>

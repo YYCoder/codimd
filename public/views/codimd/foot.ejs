@@ -1,4 +1,4 @@
-<script src="<%= serverURL %>/js/mathjax-config-extra.js"></script>
+<script src="/js/mathjax-config-extra.js"></script>
 <% if(useCDN) { %>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js" integrity="sha256-PieqE0QdEDMppwXrTzSZQr6tWFX3W5KkyRVyF1zN3eg=" crossorigin="anonymous" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -27,8 +27,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.js" integrity="sha256-fNoRrwkP2GuYPbNSJmMJOCyfRB2DhPQe0rGTgzRsyso=" crossorigin="anonymous" defer></script>
 <%- include('../build/index-scripts') %>
 <% } else { %>
-<script src="<%- serverURL %>/build/MathJax/MathJax.js" defer></script>
-<script src="<%- serverURL %>/build/MathJax/config/TeX-AMS-MML_HTMLorMML.js" defer></script>
-<script src="<%- serverURL %>/build/MathJax/config/Safe.js" defer></script>
+<script src="/build/MathJax/MathJax.js" defer></script>
+<script src="/build/MathJax/config/TeX-AMS-MML_HTMLorMML.js" defer></script>
+<script src="/build/MathJax/config/Safe.js" defer></script>
 <%- include('../build/index-pack-scripts') %>
 <% } %>

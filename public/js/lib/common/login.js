@@ -1,8 +1,6 @@
 /* eslint-env browser, jquery */
 /* global Cookies */
 
-import { serverurl } from '../config'
-
 let checkAuth = false
 let profile = null
 let lastLoginState = getLoginState()
@@ -59,7 +57,7 @@ export function checkIfAuth (yesCallback, noCallback) {
   const cookieLoginState = getLoginState()
   if (checkLoginStateChanged()) checkAuth = false
   if (!checkAuth || typeof cookieLoginState === 'undefined') {
-    $.get(`${serverurl}/me`)
+    $.get(`/me`)
       .done(data => {
         if (data && data.status === 'ok') {
           profile = data
