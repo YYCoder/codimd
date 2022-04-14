@@ -17,6 +17,7 @@
   "scripts": {
     "build": "webpack --config webpack.prod.js --display errors-only -p",
     "dev": "webpack --config webpack.dev.js --progress --colors --watch",
+    "dev:server": "nodemon --delay 2500ms --watch ./lib --watch ./config.json ./app.js",
     "doctoc": "doctoc --title='# Table of Contents' README.md",
     "lint": "standard",
     "jsonlint": "find . -type f -not -ipath \"./.devcontainer/*\" -not -ipath \"./node_modules/*\" -not -ipath \"./.vscode/*\" \\( -name \"*.json\" -o -name \"*.json.*\" \\) | xargs -n 1 -I{} -- bash -c 'echo {}; jq . {} > /dev/null;'",
@@ -43,6 +44,7 @@
     "babel-polyfill": "~6.26.0",
     "base64url": "~3.0.1",
     "body-parser": "~1.19.0",
+    "bootstrap-tagsinput": "^0.7.1",
     "chance": "~1.0.18",
     "cheerio": "~0.22.0",
     "connect-flash": "~0.1.1",
@@ -58,7 +60,7 @@
     "helmet": "~3.20.0",
     "https-proxy-agent": "^3.0.1",
     "i18n": "~0.8.3",
-    "image-hash": "^5.0.2",
+    "image-hash": "^5.3.1",
     "image-type": "^4.1.0",
     "isomorphic-fetch": "~2.2.1",
     "jsdom-nogyp": "~0.8.3",
@@ -100,6 +102,7 @@
     "shortid": "~2.2.14",
     "socket.io": "~2.2.0",
     "toobusy-js": "~0.5.1",
+    "twbs-pagination": "^1.4.2",
     "uuid": "~3.3.2",
     "validator": "~11.1.0",
     "winston": "~3.2.1",
@@ -212,7 +215,7 @@
     "utf-8-validate": "~5.0.1"
   },
   "engines": {
-    "node": ">=10.0.0 <13.0.0"
+    "node": ">=10.0.0"
   },
   "maintainers": [
     {

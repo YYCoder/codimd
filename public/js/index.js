@@ -20,6 +20,7 @@ import List from 'list.js'
 import Idle from '@hackmd/idle-js'
 
 import { Spinner } from 'spin.js'
+import { initTags } from './codimd-tag.js'
 
 import {
   checkLoginStateChanged,
@@ -413,6 +414,7 @@ Visibility.change(function (e, state) {
 $(document).ready(function () {
   idle.checkAway()
   checkResponsive()
+  syncTags()
   // if in smaller screen, we don't need advanced scrollbar
   var scrollbarStyle
   if (visibleXS) {
@@ -486,6 +488,136 @@ $(window).on('unload', function () {
 $(window).on('error', function () {
   // setNeedRefresh();
 })
+
+
+const addTag = async (id) => {
+  // add a new tag
+  try {
+    const res = await fetch(`/api/notes/${noteid}/add_tag`, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ tag_id: id }) // body data type must match "Content-Type" header
+    })
+    const { status } = await res.json()
+    if (status !== 'ok') {
+      return false
+    }
+    return true
+  } catch(e) {
+    console.error(`add tag failed, ${e}`)
+    return false
+  }
+}
+
+const syncTags = async () => {
+  const $dom = $('#tag-container')
+  let allTags = []
+  if (!window.profile) {
+    const res = await fetch('/me')
+    const data = await res.json()
+    allTags = data.tags
+  } else {
+    allTags = window.profile.tags
+  }
+
+  fetch(`/api/notes/${noteid}/get_tag`)
+    .then(res => res.json())
+    .then(data => {
+      const { tags } = data
+      
+      initTags({
+        selector: '#tag-container',
+        allData: allTags,
+        initData: tags,
+        search: (query, data) => {
+          const subsequenceMatch = (sub, word) => {
+            if (!sub || !word) return false
+            let [p1, p2] = [0, 0]
+            while (p1 < sub.length && p2 < word.length) {
+              if (sub[p1] === word[p2]) {
+                p1++
+                p2++
+              } else {
+                p2++
+              }
+            }
+            return p1 === sub.length
+          }
+          return data.filter((tag) => subsequenceMatch(query, tag.name))
+        },
+        onPressEnter: async (text) => {
+          let tagVal = null
+          // if curValues already contains text, then pass
+          const curValues = $dom.tagsValues()
+          if (curValues.some(t => t.text === text)) {
+            return
+          }
+          // detect if val is contained by allTags. if not, then create one
+          const tag = allTags.find((t) => t.name === text)
+          if (tag) {
+            tagVal = tag.id
+          } else {
+            try {
+              const res = await fetch(`/api/tag`, {
+                method: 'PUT', // *GET, POST, PUT, DELETE, etc.
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: text }) // body data type must match "Content-Type" header
+              })
+              const { status, tag } = await res.json()
+              if (status !== 'ok' || !tag) {
+                return
+              }
+              tagVal = tag.id
+            } catch(e) {
+              console.error(`create tag failed, ${e}`)
+              return
+            }
+          }
+
+          const succeed = await addTag(tagVal)
+          if (!succeed) {
+            return
+          }
+          return { value: tagVal, text: text }
+        },
+        onSelect: async (value, text) => {
+          const curValues = $dom.tagsValues()
+          if (curValues.some(t => t.text === text)) {
+            return
+          }
+          return await addTag(value)
+        },
+        onDelete: async (value, text) => {
+          try {
+            const res = await fetch(`/api/notes/${noteid}/del_tag`, {
+              method: 'POST', // *GET, POST, PUT, DELETE, etc.
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ tag_id: value }) // body data type must match "Content-Type" header
+            })
+            const { status } = await res.json()
+            if (status === 'ok') {
+              return true
+            }
+            return false
+          } catch(e) {
+            console.error(`delete tag failed, ${e}`)
+            return false
+          }
+        },
+      })
+    })
+    .catch(e => {
+      $dom.empty()
+      $dom.append(`<p class="tag-error">Fetch tags failed, ${e}</p>`)
+      console.error(`fetch tags failed, ${e}`)
+    })
+}
 
 setupSyncAreas(ui.area.codemirrorScroll, ui.area.view, ui.area.markdown, editor)
 
@@ -572,7 +704,7 @@ function checkEditorStyle () {
     checkEditorScrollbar()
   } else if (scrollbarStyle === 'native') {
     ui.area.codemirrorScroll.css('height', '')
-    ui.area.codemirrorScroll.css('min-height', desireHeight + 'px')
+    // ui.area.codemirrorScroll.css('min-height', desireHeight + 'px')
   }
   // workaround editor will have wrong doc height when editor height changed
   editor.setSize(null, ui.area.edit.height())
@@ -747,6 +879,7 @@ function toggleMode () {
 var lastMode = null
 
 function changeMode (type) {
+  console.log('changeMode: ', type)
   // lock navbar to prevent it hide after changeMode
   lockNavbar()
   saveInfo()
@@ -781,9 +914,13 @@ function changeMode (type) {
       break
   }
   // save mode to url
-  if (history.replaceState && window.loaded) history.replaceState(null, '', serverurl + '/' + noteid + '?' + appState.currentMode.name)
-  if (appState.currentMode === modeType.view) {
-    editor.getInputField().blur()
+  try {
+    if (history.replaceState && window.loaded) history.replaceState(null, '', serverurl + '/' + noteid + '?' + appState.currentMode.name)
+    if (appState.currentMode === modeType.view) {
+      editor.getInputField().blur()
+    }
+  } catch(e) {
+    console.error(`history error: ${e}`)
   }
   if (appState.currentMode === modeType.edit || appState.currentMode === modeType.both) {
     ui.toolbar.uploadImage.fadeIn()
@@ -852,6 +989,7 @@ function changeMode (type) {
   ui.toolbar.view.removeClass('active')
   var modeIcon = ui.toolbar.mode.find('i')
   modeIcon.removeClass('fa-pencil').removeClass('fa-eye')
+
   if (ui.area.edit.is(':visible') && ui.area.view.is(':visible')) { // both
     ui.toolbar.both.addClass('active')
     modeIcon.addClass('fa-eye')

@@ -85,6 +85,7 @@ realtime.io = io
 app.use(methodOverride('_method'))
 
 // session store
+// ! TODO: 改成 connect-redis，防止 mysql 无限增长
 var sessionStore = new SequelizeStore({
   db: models.sequelize
 })
@@ -134,7 +135,13 @@ app.use(i18n.init)
 
 // routes without sessions
 // static files
-app.use('/', express.static(path.join(__dirname, '/public'), { maxAge: config.staticCacheTime, index: false }))
+app.use(
+  '/',
+  express.static(
+    path.join(__dirname, '/public'),
+    { maxAge: config.staticCacheTime, index: false }
+  )
+)
 app.use('/docs', express.static(path.resolve(__dirname, config.docsPath), { maxAge: config.staticCacheTime }))
 app.use('/uploads', express.static(path.resolve(__dirname, config.uploadsPath), { maxAge: config.staticCacheTime }))
 app.use('/default.md', express.static(path.resolve(__dirname, config.defaultNotePath), { maxAge: config.staticCacheTime }))
@@ -170,6 +177,8 @@ app.use(flash())
 
 // passport
 app.use(passport.initialize())
+// ! NOTE: 其实就是调用 passport.authenticate('session')，目的是为了防止每个请求都走一遍鉴权流程，如果已经有 session 了
+// ! NOTE: 就通过 passport.deserializeUser 方法从 session 存储中获取用户信息即可
 app.use(passport.session())
 
 // check uri is valid before going further

@@ -22,38 +22,41 @@ import {
   saveHistory,
   saveStorageHistoryToServer
 } from './history'
+import { fetchNotes } from './notes'
 
 import { saveAs } from 'file-saver'
 import List from 'list.js'
 import unescapeHTML from 'lodash/unescape'
 
+window.tags = []
 require('./locale')
 
 require('../css/cover.css')
 require('../css/site.css')
 
+const noteItem = `<li class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+  <span class="id" style="display:none;"></span>
+  <a href="#">
+    <div class="item">
+      <div class="ui-history-pin fa fa-thumb-tack fa-fw"></div>
+      <div class="ui-history-close fa fa-close fa-fw" data-toggle="modal" data-target=".delete-history-modal"></div>
+      <div class="content">
+        <h4 class="text"></h4>
+        <p>
+          <i><i class="fa fa-clock-o"></i> visited </i><i class="fromNow"></i>
+          <br>
+          <i class="timestamp" style="display:none;"></i>
+          <i class="time"></i>
+        </p>
+        <p class="tags"></p>
+      </div>
+    </div>
+  </a>
+</li>`
 const options = {
   valueNames: ['id', 'text', 'timestamp', 'fromNow', 'time', 'tags', 'pinned'],
-  item: `<li class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
-          <span class="id" style="display:none;"></span>
-          <a href="#">
-            <div class="item">
-              <div class="ui-history-pin fa fa-thumb-tack fa-fw"></div>
-              <div class="ui-history-close fa fa-close fa-fw" data-toggle="modal" data-target=".delete-history-modal"></div>
-              <div class="content">
-                <h4 class="text"></h4>
-                <p>
-                  <i><i class="fa fa-clock-o"></i> visited </i><i class="fromNow"></i>
-                  <br>
-                  <i class="timestamp" style="display:none;"></i>
-                  <i class="time"></i>
-                </p>
-                <p class="tags"></p>
-              </div>
-            </div>
-          </a>
-        </li>`,
-  page: 18,
+  item: noteItem,
+  page: 1,
   pagination: [{
     outerWindow: 1
   }]
@@ -75,8 +78,10 @@ function pageInit () {
       else $('.ui-avatar').prop('src', '').hide()
       $('.ui-name').html(data.name)
       $('.ui-signout').show()
-      $('.ui-history').click()
+      $('.ui-notes').click()
       parseServerToHistory(historyList, parseHistoryCallback)
+      buildTagsFilter(data.tags)
+      fetchNotes()
     },
     () => {
       $('.ui-signin').show()
@@ -111,6 +116,13 @@ $('.ui-history').click(() => {
   if (!$('#history').is(':visible')) {
     $('.section:visible').hide()
     $('#history').fadeIn()
+  }
+})
+
+$('.ui-notes').click(() => {
+  if (!$('#notes').is(':visible')) {
+    $('.section:visible').hide()
+    $('#notes').fadeIn()
   }
 })
 
@@ -165,7 +177,7 @@ function parseHistoryCallback (list, notehistory) {
       }
     }
   }
-  buildTagsFilter(filtertags)
+  // buildTagsFilter(filtertags)
 }
 
 // update items whenever list updated
@@ -391,16 +403,12 @@ $('.ui-use-tags').select2({
   }
 })
 $('.select2-input').css('width', 'inherit')
-buildTagsFilter([])
 
-function buildTagsFilter (tags) {
-  for (let i = 0; i < tags.length; i++) {
-    tags[i] = {
-      id: i,
-      text: unescapeHTML(tags[i])
-    }
-  }
-  filtertags = tags
+const buildTagsFilter = (tags) => {
+  window.tags = filtertags = tags.map(t => ({
+    id: t.id,
+    text: `${unescapeHTML(t.name)}（${t.count}）`
+  }))
 }
 $('.ui-use-tags').on('change', function () {
   const tags = []

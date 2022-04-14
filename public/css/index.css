@@ -11,6 +11,10 @@ body {
     /*overflow: hidden;*/
 }
 
+#tag-container {
+    padding: 10px 0;
+}
+
 .night a,
 .night .open-files-container li.selected a {
     color: #5EB7E0;

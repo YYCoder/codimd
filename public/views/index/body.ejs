@@ -11,6 +11,8 @@
                             </li>
                             <li class="ui-history<% if(signin) { %> active<% } %>"><a href="#"><%= __('History') %></a>
                             </li>
+                            <li class="ui-notes<% if(signin) { %> active<% } %>"><a href="#">笔记</a>
+                            </li>
                             <div class="ui-signin" style="float: right; margin-top: 8px;<% if(signin) { %> display: none;<% } %>">
                                 <% if (allowAnonymous) { %>
                                 <a type="button" href="/new" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i> <%= __('New guest note') %></a>
@@ -89,7 +91,7 @@
                 </div>
             </div>
 
-            <div id="history" class="section"<% if(!signin) { %> style="display:none;"<% } %>>
+            <div id="history" class="section" style="display:none;">
                 <div class="ui-signin"<% if(signin) { %> style="display:none;"<% } %>>
                     <p><%= __('Below is the history from browser') %></p>
                 </div>
@@ -125,42 +127,25 @@
                 <ul class="pagination"></ul>
             </div>
 
-            <div class="mastfoot">
-                <div class="inner">
-                    <select class="ui-locale">
-                        <option value="en">English</option>
-                        <option value="zh-CN">简体中文</option>
-                        <option value="zh-TW">繁體中文</option>
-                        <option value="fr">Français</option>
-                        <option value="de">Deutsch</option>
-                        <option value="ja">日本語</option>
-                        <option value="es">Español</option>
-                        <option value="ca">Català</option>
-                        <option value="el">Ελληνικά</option>
-                        <option value="pt">Português</option>
-                        <option value="it">italiano</option>
-                        <option value="tr">Türkçe</option>
-                        <option value="ru">Русский</option>
-                        <option value="nl">Nederlands</option>
-                        <option value="hr">hrvatski jezik</option>
-                        <option value="pl">język polski</option>
-                        <option value="uk">Українська</option>
-                        <option value="hi">हिन्दी</option>
-                        <option value="sv">svenska</option>
-                        <option value="eo">Esperanto</option>
-                        <option value="da">dansk</option>
-                        <option value="ko">한국어</option>
-                        <option value="id">Bahasa Indonesia</option>
-                        <option value="sr">српски</option>
-                    </select>
-                    <p>
-                        <%- __('Powered by %s', '<a href="https://github.com/hackmdio/codimd">CodiMD</a>') %> | <a href="/s/release-notes" target="_blank" rel="noopener"><%= __('Releases') %></a> | <a href="<%- sourceURL %>" target="_blank" rel="noopener"><%= __('Source Code') %></a><% if(privacyStatement) { %> | <a href="/s/privacy" target="_blank" rel="noopener"><%= __('Privacy') %></a><% } %><% if(termsOfUse) { %> | <a href="/s/terms-of-use" target="_blank" rel="noopener"><%= __('Terms of Use') %></a><% } %>
-                    </p>
-                    <h6 class="social-foot">
-                        <%- __('Follow us on %s and %s.', '<a href="https://github.com/hackmdio/CodiMD" target="_blank" rel="noopener"><i class="fa fa-github"></i> GitHub</a>, <a href="https://gitter.im/hackmdio/hackmd" target="_blank" rel="noopener"><i class="fa fa-comments"></i> Gitter</a>', '<a href="https://poeditor.com/join/project/q0nuPWyztp" target="_blank" rel="noopener"><i class="fa fa-globe"></i> POEditor</a>') %>
-                    </h6>
-                    <% if(privacyPolicyURL && privacyPolicyURL.length > 0) { %><p><a href="<%- privacyPolicyURL %>"><%= __('Privacy Policy') %></a></p><% } %>
-                </div>
+            <div id="notes" class="section"<% if(!signin) { %> style="display:none;"<% } %>>
+                <form class="form-inline">
+                    <div class="form-group" style="vertical-align: bottom;">
+                        <input class="form-control notes-tags" placeholder="<%= __('Select tags...') %>" />
+                    </div>
+                    <div class="form-group">
+                        <input class="notes-search form-control" placeholder="搜索标题、关键字" />
+                    </div>
+                    <a href="#" class="notes-sort btn btn-default" data-sort="timestamp" title="修改时间">
+                    修改时间
+                    </a>
+                    <a href="#" class="btn btn-default ui-refresh-notes" title="刷新">
+                        <i class="fa fa-refresh"></i>
+                    </a>
+                </form>
+                <a href="#" class="btn btn-primary ui-import-from-browser" style="display:none;"><%= __('Import from browser') %></a>
+                <ul id="notes-list" class="list">
+                </ul>
+                <ul id="notes-pagination"></ul>
             </div>
         </div>
     </div>
