@@ -1,5 +1,64 @@
 /* global CodeMirror, editor */
 const wrapSymbols = ['*', '_', '~', '^', '+', '=']
+
+/**
+ * sort anchor and head by line and ch properties
+ */
+export const getStartAndEndRange = (selection) => {
+  const { anchor, head } = selection
+  let start = null
+  let end = null
+  if (anchor.line > head.line) {
+    start = head
+    end = anchor
+  } else if (anchor.line < head.line) {
+    start = anchor
+    end = head
+  } else {
+    if (anchor.ch > head.ch) {
+      start = head
+      end = anchor
+    } else {
+      start = anchor
+      end = head
+    }
+  }
+  return { start, end }
+}
+
+export const toggleWrap = (cm, wrapper) => {
+  const selections = cm.listSelections()
+  selections.forEach((s) => {
+    const { start, end } = getStartAndEndRange(s)
+    const wrapStart = { line: start.line, ch: start.ch-2 }
+    const wrapEnd = { line: end.line, ch: end.ch+2 }
+    const wrapText = cm.getRange(wrapStart, wrapEnd)
+    const startWrap = wrapText.slice(0, 2)
+    const endWrap = wrapText.slice(-2)
+    // if it's already wrapped, then remove it
+    if (startWrap === wrapper && endWrap === wrapper) {
+      const singleWrapper = Array.from(new Set(...[wrapper.split('')]))[0]
+      const startReg = new RegExp(`^\\${singleWrapper}\\${singleWrapper}`)
+      const endReg = new RegExp(`\\${singleWrapper}\\${singleWrapper}$`)
+      console.log(startReg, endReg)
+      cm.replaceRange(wrapText.replace(startReg, '').replace(endReg, ''), wrapStart, wrapEnd)
+      if (start.line == end.line) {
+        cm.setSelection({ line: start.line, ch: start.ch-2 }, { line: end.line, ch: end.ch-2 })
+      } else {
+        cm.setSelection({ line: start.line, ch: start.ch-2 }, { line: end.line, ch: end.ch })
+      }
+    } else {
+      cm.replaceRange(`${wrapper}${cm.getRange(start, end)}${wrapper}`, start, end)
+      if (start.line == end.line) {
+        cm.setSelection({ line: start.line, ch: start.ch+2 }, { line: end.line, ch: end.ch+2 })
+      } else {
+        cm.setSelection({ line: start.line, ch: start.ch+2 }, { line: end.line, ch: end.ch })
+      }
+    }
+  })
+}
+
+
 export function wrapTextWith (editor, cm, symbol) {
   if (!cm.getSelection()) {
     return CodeMirror.Pass

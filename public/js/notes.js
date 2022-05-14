@@ -40,7 +40,6 @@ const pgOpts = {
 }
 
 export const fetchNotes = async () => {
-  console.log('fetchNotes start')
   const tags = $('.notes-tags').select2('data')
   const keyword = $('#notes .notes-search').val()
   const orderClass = $('#notes .notes-sort').attr('class').split(' ')
@@ -50,12 +49,6 @@ export const fetchNotes = async () => {
   const tagIds = tags.reduce((res, cur) => {
     return `${res}&tagIds=${cur.id}`
   }, '')
-  console.log(`
-    tags: ${tags}, 
-    keyword: ${keyword}, 
-    order: ${order},
-    tagIds: ${tagIds}`
-  )
 
   fetch(`/api/notes/my_notes?page=${curPage-1}&limit=${LIMIT}&name=${keyword}&keyword=${keyword}${tagIds}${orderQuery}`)
     .then(res => res.json())

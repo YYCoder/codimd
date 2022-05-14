@@ -18,6 +18,7 @@ const viewportMargin = 20
 
 const jumpToAddressBarKeymapName = isMac ? 'Cmd-L' : 'Ctrl-L'
 
+
 export default class Editor {
   constructor () {
     this.editor = null
@@ -33,6 +34,27 @@ export default class Editor {
           return CodeMirror.Pass
         }
       },
+      // NOTE: custom keymap start
+      // NOTE: range 对象 { line: lineNumber, ch:  } 是从除了 title 以外的第一行算起的，并且是从 0 开始的
+      'Ctrl-B': function (cm) {
+        utils.toggleWrap(cm, '**')
+        return false
+      },
+      'Ctrl-L': function (cm) {
+        const ss = cm.getSelections()
+        const newS = ss.map((s) => `[${s}](https://)`)
+        cm.replaceSelections(newS)
+      },
+      'Ctrl-=': function (cm) {
+        utils.toggleWrap(cm, '==')
+        return false
+      },
+      'Ctrl-D': function (cm) {
+        utils.toggleWrap(cm, '~~')
+        return false
+      },
+      // NOTE: custom keymap end
+
       'Cmd-S': function () {
         return false
       },
@@ -104,12 +126,12 @@ export default class Editor {
       'Shift-Ctrl--': cm => {
         utils.wrapTextWith(this.editor, cm, '_')
       },
-      'Ctrl-~': cm => {
-        utils.wrapTextWith(this.editor, cm, '~')
-      },
-      'Shift-Ctrl-`': cm => {
-        utils.wrapTextWith(this.editor, cm, '~')
-      },
+      // 'Ctrl-~': cm => {
+      //   utils.wrapTextWith(this.editor, cm, '~')
+      // },
+      // 'Shift-Ctrl-`': cm => {
+      //   utils.wrapTextWith(this.editor, cm, '~')
+      // },
       'Ctrl-^': cm => {
         utils.wrapTextWith(this.editor, cm, '^')
       },
@@ -119,12 +141,12 @@ export default class Editor {
       'Ctrl-+': cm => {
         utils.wrapTextWith(this.editor, cm, '+')
       },
-      'Shift-Ctrl-=': cm => {
-        utils.wrapTextWith(this.editor, cm, '+')
-      },
-      'Ctrl-=': cm => {
-        utils.wrapTextWith(this.editor, cm, '=')
-      },
+      // 'Shift-Ctrl-=': cm => {
+      //   utils.wrapTextWith(this.editor, cm, '+')
+      // },
+      // 'Ctrl-=': cm => {
+      //   utils.wrapTextWith(this.editor, cm, '=')
+      // },
       'Shift-Ctrl-Backspace': cm => {
         utils.wrapTextWith(this.editor, cm, 'Backspace')
       }
