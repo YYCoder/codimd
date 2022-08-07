@@ -26,7 +26,7 @@ const NO_NOTE_TEMPLATE = `<h4 class="ui-nonotes">
 暂无文档......
 </h4>`
 let curPage = 1
-const LIMIT = 20
+const LIMIT = 18
 const $pg = $('#notes-pagination')
 // 分页配置
 const pgOpts = {
